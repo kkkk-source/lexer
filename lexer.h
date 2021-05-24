@@ -7,5 +7,5 @@
 #define PLUS 6
 #define RIGHT_PARENTHESIS 7
 
-void Lex_init(FILE *src);
+void Lex_init(FILE * src);
 int Lex_gettok(void);
