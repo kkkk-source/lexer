@@ -38,7 +38,7 @@ void Lex_init(FILE * src)
 // Return the enum that match the character that lextex is holding
 int Lex_gettok(void)
 {
-    while (1) {
+    for (;;) {
 	switch (*lextext) {
 
 	case '\n':
