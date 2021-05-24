@@ -8,19 +8,23 @@
 
 #define BUF_SIZE 2048
 
-// File source descriptor
-FILE *tokfd;
-
-// Lexeme text character
-char *lextext;
-
-// Buffer holding one line at a time of the source file tokfd
+// Buffer holds one line at a time of the source file srcfd
 char buf[BUF_SIZE];
 
-// Read the next line from the file descriptor tokfd
+
+// Lexeme text character hold one character at a time of buf. For now, one
+// character represents a lexeme
+char *lextext;
+
+
+// Source file descriptor. The file to get the source code from
+FILE *srcfd;
+
+
+// Read the next line from the file descriptor srcfd
 void repeek(void)
 {
-    if (fgets(buf, BUF_SIZE, tokfd) == NULL)
+    if (fgets(buf, BUF_SIZE, srcfd) == NULL)
 	// There is no more input to read from
 	*lextext = EOF;
     else
@@ -28,14 +32,17 @@ void repeek(void)
 	lextext = buf;
 }
 
+// Src is the file to get the source code from. Src should be opened before
+// been pass through this initialization. Otherwise, the behavior is
+// unexpected.
 void Lex_init(FILE * src)
 {
     lextext = "";
-    tokfd = src;
+    srcfd = src;
     repeek();
 }
 
-// Return the enum that match the character that lextex is holding
+// Return the enum that match the lexeme that lextex is currently holding
 int Lex_gettok(void)
 {
     for (;;) {
