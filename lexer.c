@@ -3,34 +3,52 @@
  *
  */
 
-#include <string.h>
 #include <stdio.h>
 #include "lexer.h"
 
-#define SIZE 1000
+#define BUF_SIZE 2048
 
-char src_buf[SIZE];
+// File descriptor
+FILE *tokfd;
 
+// Lexeme text character
 char *lextext;
 
-FILE *tokfd;
+char buf[BUF_SIZE];
+
+// Read the next line from the file descriptor tokfd. 
+void repeek(void)
+{
+    if (fgets(buf, BUF_SIZE, tokfd) == NULL)
+	// There is no more input to read from
+	*lextext = EOF;
+    else
+	// Address lextext to the new read line
+	lextext = buf;
+}
+
+void Lex_init(FILE * src)
+{
+    lextext = "";
+    tokfd = src;
+    repeek();
+}
 
 int Lex_gettok(void)
 {
     while (1) {
-
-	if (*lextext == '\0') {
-	    if (fgets(src_buf, SIZE, tokfd) == NULL)
-		return END_OF_FILE;
-	    lextext = src_buf;
-	}
-
 	switch (*lextext) {
+
 	case '\n':
 	case '\t':
 	case '\r':
 	case ' ':
-	    ++lextext;
+	    lextext++;
+	    break;
+
+	case '\0':
+	    // When the current line has been consumed, peek the folliwng one
+	    repeek();
 	    break;
 
 	case '0':
@@ -43,38 +61,36 @@ int Lex_gettok(void)
 	case '7':
 	case '8':
 	case '9':
-	    ++lextext;
+	    lextext++;
 	    return IDENTIFIER;
 
 	case '/':
-	    ++lextext;
+	    lextext++;
 	    return DIVIDE;
 
 	case '-':
-	    ++lextext;
+	    lextext++;
 	    return MINUS;
 
 	case '*':
-	    ++lextext;
+	    lextext++;
 	    return MULTIPLY;
 
 	case '(':
-	    ++lextext;
+	    lextext++;
 	    return LEFT_PARENTHESIS;
 
 	case '+':
-	    ++lextext;
+	    lextext++;
 	    return PLUS;
 
 	case ')':
-	    ++lextext;
+	    lextext++;
 	    return RIGHT_PARENTHESIS;
+
+	case EOF:
+	    // The current file has been completly consumed
+	    return END_OF_FILE;
 	}
     }
-}
-
-void Lex_init(FILE * src)
-{
-    lextext = "";
-    tokfd = src;
 }
