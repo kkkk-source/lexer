@@ -3,14 +3,14 @@
 
 int main(void)
 {
-    Lex_init(stdin);
+    lex_init(stdin);
 
-    int tokkind;
+    int tok;
 
     do {
-	tokkind = Lex_gettok();
-	printf("%d\n", tokkind);
-    } while (tokkind != END_OF_FILE);
+	tok = lex_gettok();
+	printf("%d\n", tok);
+    } while (tok != END_OF_FILE);
 
     return 0;
 }

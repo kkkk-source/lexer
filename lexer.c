@@ -8,41 +8,56 @@
 
 #define BUF_SIZE 2048
 
-// lextext holds one character at a time of buf. For now, one character
-// represents a lexeme.
+/* lextext holds one character at a time of buf. */
 char *lextext;
 
-// buf holds one line at a time of the source file srcfd.
+/* buf holds one line at a time of the source file srcfd. */
 char buf[BUF_SIZE];
 
-// srcfd is the source file descriptor, the file to get the source code from.
+/* srcfd is the source file descriptor, the file to get the source code from. */
 FILE *srcfd;
 
-// repeek puts the next line from the file descriptor srcfd into buf.
+char *tokstrings[] = {
+    "EOF",			/* END_OF_FILE       */
+    "EOL",			/* END_OF_LINE       */
+    "ID",			/* IDENTIFIER        */
+    "/",			/* DIVIDE            */
+    "-",			/* MINUS             */
+    "*",			/* MULTIPLY          */
+    "(",			/* LEFT_PARENTHESIS  */
+    "+",			/* PLUS              */
+    ")",			/* RIGHT_PARENTHESIS */
+};
+
+/* repeek puts the next line from the file descriptor srcfd into buf. */
 void repeek(void)
 {
     if (fgets(buf, BUF_SIZE, srcfd) == NULL)
-	// There is no more lines to read from in srcfd.
+	/* There is no more lines to read from in srcfd. */
 	*lextext = EOF;
     else
-	// Address lextext to the first character of the new line.
+	/* Address lextext to the first character of the new line. */
 	lextext = buf;
 }
 
-// Lex_init loads the first line of the src file into the buf and makes the
-// lextext to point to the buf's first character.  The source file src is the
-// file to get the source code from. Lex_init expects the file src to be
-// already opened.
-void Lex_init(FILE * src)
+/*
+ * lex_init loads the first line of the src file into the buf and makes the
+ * lextext to point to the buf's first character.  The source file src is the
+ * file to get the source code from. Lex_init expects the file src to be
+ * already opened.
+ */
+void lex_init(FILE * src)
 {
     lextext = "";
     srcfd = src;
     repeek();
 }
 
-// Lex_gettok returns the enum that match the lexeme that lextext is currently
-// pointing to.
-int Lex_gettok(void)
+/* 
+ * lex_gettok returns the enum that match the lexeme that lextext is currently
+ * pointing to. 
+ */
+int lex_gettok(void)
 {
     for (;;) {
 	switch (*lextext) {
@@ -54,8 +69,10 @@ int Lex_gettok(void)
 	    break;
 
 	case '\0':
-	    // When the lextext points the '\0' character of the buf, put the
-	    // following line into buf.
+	    /* 
+	     * When the lextext points the '\0' character of the buf, put the
+	     * following line into buf. 
+	     */
 	    repeek();
 	    break;
 
@@ -97,11 +114,11 @@ int Lex_gettok(void)
 	    return RIGHT_PARENTHESIS;
 
 	case EOF:
-	    // The current source file srcfd has been completly consumed.
+	    /* The current source file srcfd has been completly consumed. */
 	    return END_OF_FILE;
 
 	default:
-	    // Unexpected character. Ignore it for now.
+	    /* Unexpected character. Ignore it for now. */
 	    lextext++;
 	}
     }
