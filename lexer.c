@@ -29,8 +29,8 @@ char *tokstrings[] = {
     ")",			/* RIGHT_PARENTHESIS */
 };
 
-/* repeek puts the next line from the file descriptor srcfd into buf. */
-void repeek(void)
+/* peek puts the next line from the file descriptor srcfd into buf. */
+void peek(void)
 {
     if (fgets(buf, BUF_SIZE, srcfd) == NULL)
 	/* There is no more lines to read from in srcfd. */
@@ -50,7 +50,7 @@ void lex_init(FILE * src)
 {
     lextext = "";
     srcfd = src;
-    repeek();
+    peek();
 }
 
 /* 
@@ -73,7 +73,7 @@ int lex_gettok(void)
 	     * When the lextext points the '\0' character of the buf, put the
 	     * following line into buf. 
 	     */
-	    repeek();
+	    peek();
 	    break;
 
 	case '0':
