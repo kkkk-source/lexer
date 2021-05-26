@@ -12,5 +12,6 @@ int main(void)
 	printf("%d\n", tok);
     } while (tok != END_OF_FILE);
 
+    fclose(stdin);
     return 0;
 }
