@@ -6,38 +6,37 @@
 #include <stdio.h>
 #include "lexer.h"
 
-#define BUF_SIZE 2048
+#define MAX_LINE_LENGTH 2048
+
+/* buf holds one line at a time of the source file srcfd. */
+char buf[MAX_LINE_LENGTH];
 
 /* lextext holds one character at a time of buf. */
 char *lextext;
-
-/* buf holds one line at a time of the source file srcfd. */
-char buf[BUF_SIZE];
 
 /* srcfd is the source file descriptor, the file to get the source code from. */
 FILE *srcfd;
 
 char *tokstrings[] = {
-    "EOF",			/* END_OF_FILE       */
-    "EOL",			/* END_OF_LINE       */
-    "ID",			/* IDENTIFIER        */
-    "/",			/* DIVIDE            */
-    "-",			/* MINUS             */
-    "*",			/* MULTIPLY          */
-    "(",			/* LEFT_PARENTHESIS  */
-    "+",			/* PLUS              */
-    ")",			/* RIGHT_PARENTHESIS */
+    "EOF",			/* END_OF_FILE       0 */
+    "EOL",			/* END_OF_LINE         */
+    "ID",			/* IDENTIFIER          */
+    "/",			/* DIVIDE              */
+    "-",			/* MINUS               */
+    "*",			/* MULTIPLY          5 */
+    "(",			/* LEFT_PARENTHESIS    */
+    "+",			/* PLUS                */
+    ")",			/* RIGHT_PARENTHESIS   */
 };
 
 /* peek puts the next line from the file descriptor srcfd into buf. */
 void peek(void)
 {
-    if (fgets(buf, BUF_SIZE, srcfd) == NULL)
-	/* There is no more lines to read from in srcfd. */
-	*lextext = EOF;
-    else
-	/* Address lextext to the first character of the new line. */
-	lextext = buf;
+    /* 
+     * If fgets returns NULL, there is no more lines to read from. Otherwise,
+     * points lextext at the first character of the new line. 
+     */
+    lextext = fgets(buf, MAX_LINE_LENGTH, srcfd);
 }
 
 /*
@@ -59,7 +58,9 @@ void lex_init(FILE * src)
  */
 int lex_gettok(void)
 {
-    for (;;) {
+    /* Loop while lextext is not equals to NULL. */
+    while (lextext) {
+
 	switch (*lextext) {
 	case '\n':
 	case '\t':
@@ -113,13 +114,12 @@ int lex_gettok(void)
 	    lextext++;
 	    return RIGHT_PARENTHESIS;
 
-	case EOF:
-	    /* The current source file srcfd has been completly consumed. */
-	    return END_OF_FILE;
-
 	default:
 	    /* Unexpected character. Ignore it for now. */
 	    lextext++;
 	}
     }
+
+    /* The current source file srcfd has been completly consumed. */
+    return END_OF_FILE;
 }
