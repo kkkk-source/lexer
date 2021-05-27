@@ -5,12 +5,12 @@ int main(void)
 {
     lex_init(stdin);
 
-    int tok;
+    T t;
 
     do {
-	tok = lex_gettok();
-	printf("%d\n", tok);
-    } while (tok != END_OF_FILE);
+	t = lex_gettok();
+	printf("%s\n", lex_toktostr(t));
+    } while (t != TEndOfFile);
 
     fclose(stdin);
     return 0;

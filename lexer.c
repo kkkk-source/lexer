@@ -18,19 +18,23 @@ char *lextext;
 FILE *srcfd;
 
 char *tokstrings[] = {
-    "EOF",			/* END_OF_FILE       0 */
-    "EOL",			/* END_OF_LINE         */
-    "ID",			/* IDENTIFIER          */
-    "/",			/* DIVIDE              */
-    "-",			/* MINUS               */
-    "*",			/* MULTIPLY          5 */
-    "(",			/* LEFT_PARENTHESIS    */
-    "+",			/* PLUS                */
-    ")",			/* RIGHT_PARENTHESIS   */
+    "end of file",		/* TEndOfFile        0 */
+    "identifier",		/* TIdent              */
+    "\"/\"",			/* TDivide             */
+    "\"-\"",			/* TMinus              */
+    "\"*\"",			/* TMultiply         5 */
+    "\"(\"",			/* TLeftParenthesis    */
+    "\"+\"",			/* TPlus               */
+    "\")\"",			/* TRightParenthesis   */
 };
 
-/* peek puts the next line from the file descriptor srcfd into buf. */
-void peek(void)
+char *lex_toktostr(T t)
+{
+    return tokstrings[t];
+}
+
+/* load_line puts the next line from the file descriptor srcfd into buf. */
+void load_line(void)
 {
     /* 
      * If fgets returns NULL, there is no more lines to read from. Otherwise,
@@ -42,21 +46,21 @@ void peek(void)
 /*
  * lex_init loads the first line of the src file into the buf and makes the
  * lextext to point to the buf's first character.  The source file src is the
- * file to get the source code from. Lex_init expects the file src to be
+ * file to get the source code from. lex_init expects the file src to be
  * already opened.
  */
 void lex_init(FILE * src)
 {
     lextext = "";
     srcfd = src;
-    peek();
+    load_line();
 }
 
 /* 
  * lex_gettok returns the enum that match the lexeme that lextext is currently
  * pointing to. 
  */
-int lex_gettok(void)
+T lex_gettok(void)
 {
     /* Loop while lextext is not equals to NULL. */
     while (lextext) {
@@ -74,7 +78,7 @@ int lex_gettok(void)
 	     * When the lextext points the '\0' character of the buf, put the
 	     * following line into buf. 
 	     */
-	    peek();
+	    load_line();
 	    break;
 
 	case '0':
@@ -88,31 +92,31 @@ int lex_gettok(void)
 	case '8':
 	case '9':
 	    lextext++;
-	    return IDENTIFIER;
+	    return TIdent;
 
 	case '/':
 	    lextext++;
-	    return DIVIDE;
+	    return TDivide;
 
 	case '-':
 	    lextext++;
-	    return MINUS;
+	    return TMinus;
 
 	case '*':
 	    lextext++;
-	    return MULTIPLY;
+	    return TMultiply;
 
 	case '(':
 	    lextext++;
-	    return LEFT_PARENTHESIS;
+	    return TLeftParenthesis;
 
 	case '+':
 	    lextext++;
-	    return PLUS;
+	    return TPlus;
 
 	case ')':
 	    lextext++;
-	    return RIGHT_PARENTHESIS;
+	    return TRightParenthesis;
 
 	default:
 	    /* Unexpected character. Ignore it for now. */
@@ -121,5 +125,5 @@ int lex_gettok(void)
     }
 
     /* The current source file srcfd has been completly consumed. */
-    return END_OF_FILE;
+    return TEndOfFile;
 }
