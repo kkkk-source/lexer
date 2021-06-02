@@ -126,6 +126,6 @@ Type lex_next(void)
 	}
     }
 
-    /* The current source file srcfd has been completly consumed. */
+    /* The current source file source_file has been completly consumed. */
     return TEndOfFile;
 }
