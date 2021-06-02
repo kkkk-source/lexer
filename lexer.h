@@ -1,4 +1,4 @@
-/* T indentify a token type */
+/* Type indentify a token type */
 typedef enum {
     TEndOfFile,
     TIdent,
@@ -8,7 +8,7 @@ typedef enum {
     TLeftParenthesis,
     TPlus,
     TRightParenthesis,
-} T;
+} Type;
 
 /*
  * lex_init loads the first line of the src file into the buf and makes the
@@ -19,10 +19,10 @@ typedef enum {
 void lex_init(FILE * src);
 
 /* 
- * lex_gettok returns the token type (enum) that match the lexeme that lextext
+ * lex_next returns the token type (enum) that match the lexeme that lextext
  * is currently pointing to. 
  */
-T lex_gettok(void);
+Type lex_next(void);
 
 /* lex_toktostr returns the string representation of T. */
-char *lex_toktostr(T);
+char *lex_toktostr(Type);

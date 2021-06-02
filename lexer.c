@@ -9,15 +9,15 @@
 #define MAX_LINE_LENGTH 2048
 
 /* buf holds one line at a time of the source file srcfd. */
-char buf[MAX_LINE_LENGTH];
+static char buf[MAX_LINE_LENGTH];
 
 /* lextext holds one character at a time of buf. */
-char *lextext;
+static char *lextext;
 
 /* srcfd is the source file descriptor, the file to get the source code from. */
-FILE *srcfd;
+static FILE *srcfd;
 
-char *tokstrings[] = {
+static char *tokstrings[] = {
     "end of file",		/* TEndOfFile        0 */
     "identifier",		/* TIdent              */
     "\"/\"",			/* TDivide             */
@@ -28,13 +28,13 @@ char *tokstrings[] = {
     "\")\"",			/* TRightParenthesis   */
 };
 
-char *lex_toktostr(T t)
+char *lex_toktostr(Type t)
 {
     return tokstrings[t];
 }
 
 /* load_line puts the next line from the file descriptor srcfd into buf. */
-void load_line(void)
+static void load_line(void)
 {
     /* 
      * If fgets returns NULL, there is no more lines to read from. Otherwise,
@@ -57,10 +57,10 @@ void lex_init(FILE * src)
 }
 
 /* 
- * lex_gettok returns the enum that match the lexeme that lextext is currently
+ * lex_next returns the enum that match the lexeme that lextext is currently
  * pointing to. 
  */
-T lex_gettok(void)
+Type lex_next(void)
 {
     /* Loop while lextext is not equals to NULL. */
     while (lextext) {

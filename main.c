@@ -5,7 +5,7 @@ int main(void)
 {
     lex_init(stdin);
 
-    T t;
+    Type t;
 
     do {
 	t = lex_gettok();
