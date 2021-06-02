@@ -1,6 +1,7 @@
 /* Type indentify a token type */
 typedef enum {
     TEndOfFile,
+    TError,
     TIdent,
     TDivide,
     TMinus,
@@ -25,4 +26,4 @@ void lex_init(FILE * src);
 Type lex_next(void);
 
 /* lex_toktostr returns the string representation of T. */
-char *lex_toktostr(Type);
+char *lex_tok2string(Type);

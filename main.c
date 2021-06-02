@@ -8,8 +8,8 @@ int main(void)
     Type t;
 
     do {
-	t = lex_gettok();
-	printf("%s\n", lex_toktostr(t));
+	t = lex_next();
+	printf("%s\n", lex_tok2string(t));
     } while (t != TEndOfFile);
 
     fclose(stdin);

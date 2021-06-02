@@ -8,17 +8,19 @@
 
 #define MAX_LINE_LENGTH 2048
 
-/* buf holds one line at a time of the source file srcfd. */
-static char buf[MAX_LINE_LENGTH];
+/* The file to get the source code from. */
+static FILE *source_file;
 
-/* lextext holds one character at a time of buf. */
-static char *lextext;
+/* The input of text being scanned. */
+static char input[MAX_LINE_LENGTH];
 
-/* srcfd is the source file descriptor, the file to get the source code from. */
-static FILE *srcfd;
+/* The current character in input. */
+static char *ch;
 
-static char *tokstrings[] = {
+/* The string representation of all types of tokens. */
+static char *tokenstrings[] = {
     "end of file",		/* TEndOfFile        0 */
+    "error",			/* TError              */
     "identifier",		/* TIdent              */
     "\"/\"",			/* TDivide             */
     "\"-\"",			/* TMinus              */
@@ -28,57 +30,57 @@ static char *tokstrings[] = {
     "\")\"",			/* TRightParenthesis   */
 };
 
-char *lex_toktostr(Type t)
+/* lex_tok2string returns the string representation of the Type t. */
+char *lex_tok2string(Type t)
 {
-    return tokstrings[t];
+    return tokenstrings[t];
 }
 
-/* load_line puts the next line from the file descriptor srcfd into buf. */
+/* load_line reads the next line of source_file and stores it in input. */
 static void load_line(void)
 {
     /* 
      * If fgets returns NULL, there is no more lines to read from. Otherwise,
-     * points lextext at the first character of the new line. 
+     * set ch to the first character of the new line. 
      */
-    lextext = fgets(buf, MAX_LINE_LENGTH, srcfd);
+    ch = fgets(input, MAX_LINE_LENGTH, source_file);
 }
 
 /*
- * lex_init loads the first line of the src file into the buf and makes the
- * lextext to point to the buf's first character.  The source file src is the
- * file to get the source code from. lex_init expects the file src to be
- * already opened.
+ * lex_init reads the first line of the src file and stores it in input and
+ * sets the ch to the input's first character.  The source file src is the file
+ * to get the source code from. lex_init expects the file src to be already
+ * opened.
  */
 void lex_init(FILE * src)
 {
-    lextext = "";
-    srcfd = src;
+    source_file = src;
     load_line();
 }
 
 /* 
- * lex_next returns the enum that match the lexeme that lextext is currently
- * pointing to. 
+ * lex_next returns the enum that match the lexeme that ch is currently
+ * pointing to. The max lexeme width is just one character.
  */
 Type lex_next(void)
 {
-    /* Loop while lextext is not equals to NULL. */
-    while (lextext) {
+    while (ch != NULL) {
 
-	switch (*lextext) {
+	switch (*ch) {
+
+	case '\0':
+	    /* 
+	     * When the ch is the '\0' character of the line, load the following
+	     * line. 
+	     */
+	    load_line();
+	    break;
+
 	case '\n':
 	case '\t':
 	case '\r':
 	case ' ':
-	    lextext++;
-	    break;
-
-	case '\0':
-	    /* 
-	     * When the lextext points the '\0' character of the buf, put the
-	     * following line into buf. 
-	     */
-	    load_line();
+	    ch++;
 	    break;
 
 	case '0':
@@ -91,36 +93,36 @@ Type lex_next(void)
 	case '7':
 	case '8':
 	case '9':
-	    lextext++;
+	    ch++;
 	    return TIdent;
 
 	case '/':
-	    lextext++;
+	    ch++;
 	    return TDivide;
 
 	case '-':
-	    lextext++;
+	    ch++;
 	    return TMinus;
 
 	case '*':
-	    lextext++;
+	    ch++;
 	    return TMultiply;
 
 	case '(':
-	    lextext++;
+	    ch++;
 	    return TLeftParenthesis;
 
 	case '+':
-	    lextext++;
+	    ch++;
 	    return TPlus;
 
 	case ')':
-	    lextext++;
+	    ch++;
 	    return TRightParenthesis;
 
 	default:
-	    /* Unexpected character. Ignore it for now. */
-	    lextext++;
+	    ch++;
+	    return TError;
 	}
     }
 
