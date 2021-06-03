@@ -3,6 +3,7 @@
  *
  */
 
+#include <stdlib.h>
 #include <stdio.h>
 #include "lexer.h"
 
@@ -62,9 +63,12 @@ void lex_init(FILE * src)
  * lex_next returns the enum that match the lexeme that ch is currently
  * pointing to. The max lexeme width is just one character.
  */
-Type lex_next(void)
+struct Token *lex_next(void)
 {
     while (ch != NULL) {
+
+	struct Token *tok = malloc(sizeof(struct Token));
+	tok->text = *ch;
 
 	switch (*ch) {
 
@@ -94,38 +98,49 @@ Type lex_next(void)
 	case '8':
 	case '9':
 	    ch++;
-	    return TIdent;
+	    tok->type = TIdent;
+	    return tok;
 
 	case '/':
 	    ch++;
-	    return TDivide;
+	    tok->type = TDivide;
+	    return tok;
 
 	case '-':
 	    ch++;
-	    return TMinus;
+	    tok->type = TMinus;
+	    return tok;
 
 	case '*':
 	    ch++;
-	    return TMultiply;
+	    tok->type = TMultiply;
+	    return tok;
 
 	case '(':
 	    ch++;
-	    return TLeftParenthesis;
+	    tok->type = TLeftParenthesis;
+	    return tok;
 
 	case '+':
 	    ch++;
-	    return TPlus;
+	    tok->type = TPlus;
+	    return tok;
 
 	case ')':
 	    ch++;
-	    return TRightParenthesis;
+	    tok->type = TRightParenthesis;
+	    return tok;
 
 	default:
 	    ch++;
-	    return TError;
+	    tok->type = TError;
+	    return tok;
 	}
     }
 
     /* The current source file source_file has been completly consumed. */
-    return TEndOfFile;
+    struct Token *tok = malloc(sizeof(struct Token));
+    tok->type = TEndOfFile;
+    tok->text = EOF;
+    return tok;
 }

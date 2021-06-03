@@ -11,6 +11,11 @@ typedef enum {
     TRightParenthesis,
 } Type;
 
+struct Token {
+    Type type;
+    char text;
+};
+
 /*
  * lex_init reads the first line of the src file and stores it in input and
  * sets the ch to the input's first character.  The source file src is the file
@@ -23,7 +28,7 @@ void lex_init(FILE * src);
  * lex_next returns the enum that match the lexeme that ch is currently
  * pointing to. The max lexeme width is just one character.
  */
-Type lex_next(void);
+struct Token *lex_next(void);
 
 /* lex_tok2string returns the string representation of the Type t. */
 char *lex_tok2string(Type);

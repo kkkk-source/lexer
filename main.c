@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include "lexer.h"
 
@@ -5,13 +6,15 @@ int main(void)
 {
     lex_init(stdin);
 
-    Type t;
+    struct Token *tok;
 
     do {
-	t = lex_next();
-	printf("%s\n", lex_tok2string(t));
-    } while (t != TEndOfFile);
+	tok = lex_next();
+	printf("type: %s text: %c\n", lex_tok2string(tok->type),
+	       tok->text);
+    } while (tok->type != TEndOfFile);
 
+    free(tok);
     fclose(stdin);
     return 0;
 }
