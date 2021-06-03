@@ -3,7 +3,6 @@
  *
  */
 
-#include <stdlib.h>
 #include <stdio.h>
 #include "lexer.h"
 
@@ -31,8 +30,8 @@ static char *tokenstrings[] = {
     "\")\"",			/* TRightParenthesis   */
 };
 
-/* lex_tok2string returns the string representation of the Type t. */
-char *lex_tok2string(Type t)
+/* lex_tok2string returns the string representation of the type t. */
+char *lex_tok2string(type t)
 {
     return tokenstrings[t];
 }
@@ -59,19 +58,12 @@ void lex_init(FILE * src)
     load_line();
 }
 
-/* 
- * lex_next returns the enum that match the lexeme that ch is currently
- * pointing to. The max lexeme width is just one character.
- */
-struct Token *lex_next(void)
+ 
+/* lex_next find the next token in the input and stores it into tok. */
+void lex_next(struct token * tok)
 {
     while (ch != NULL) {
-
-	struct Token *tok = malloc(sizeof(struct Token));
-	tok->text = *ch;
-
-	switch (*ch) {
-
+	switch ((tok->text = *ch)) {
 	case '\0':
 	    /* 
 	     * When the ch is the '\0' character of the line, load the following
@@ -99,48 +91,46 @@ struct Token *lex_next(void)
 	case '9':
 	    ch++;
 	    tok->type = TIdent;
-	    return tok;
+	    return;
 
 	case '/':
 	    ch++;
 	    tok->type = TDivide;
-	    return tok;
+	    return;
 
 	case '-':
 	    ch++;
 	    tok->type = TMinus;
-	    return tok;
+	    return;
 
 	case '*':
 	    ch++;
 	    tok->type = TMultiply;
-	    return tok;
+	    return;
 
 	case '(':
 	    ch++;
 	    tok->type = TLeftParenthesis;
-	    return tok;
+	    return;
 
 	case '+':
 	    ch++;
 	    tok->type = TPlus;
-	    return tok;
+	    return;
 
 	case ')':
 	    ch++;
 	    tok->type = TRightParenthesis;
-	    return tok;
+	    return;
 
 	default:
 	    ch++;
 	    tok->type = TError;
-	    return tok;
+	    return;
 	}
     }
 
     /* The current source file source_file has been completly consumed. */
-    struct Token *tok = malloc(sizeof(struct Token));
     tok->type = TEndOfFile;
     tok->text = EOF;
-    return tok;
 }

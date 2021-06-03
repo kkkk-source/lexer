@@ -6,10 +6,10 @@ int main(void)
 {
     lex_init(stdin);
 
-    struct Token *tok;
+    struct token *tok = malloc(sizeof(struct token));
 
     do {
-	tok = lex_next();
+	lex_next(tok);
 	printf("type: %s text: %c\n", lex_tok2string(tok->type),
 	       tok->text);
     } while (tok->type != TEndOfFile);

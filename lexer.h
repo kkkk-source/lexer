@@ -9,11 +9,11 @@ typedef enum {
     TLeftParenthesis,
     TPlus,
     TRightParenthesis,
-} Type;
+} type;
 
-struct Token {
-    Type type;
-    char text;
+struct token {
+    type type;
+    char text; /* the lexeme is only a `char` long. */
 };
 
 /*
@@ -24,11 +24,8 @@ struct Token {
  */
 void lex_init(FILE * src);
 
-/* 
- * lex_next returns the enum that match the lexeme that ch is currently
- * pointing to. The max lexeme width is just one character.
- */
-struct Token *lex_next(void);
+/* lex_next find the next token in the input and stores it into tok. */
+void lex_next(struct token * tok);
 
 /* lex_tok2string returns the string representation of the Type t. */
-char *lex_tok2string(Type);
+char *lex_tok2string(type t);
